@@ -14,14 +14,26 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(setBrightnessLevel:(float)brightnessLevel)
 {
-    [UIScreen mainScreen].brightness = brightnessLevel;
+    /*
+     2019.11.01 edited by woogie.kim
+     Xcode11 iPhone11 이상 계열에서 main thread violation exception이 발생하기 때문에 queue 직렬화로 처리
+     */
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        [UIScreen mainScreen].brightness = brightnessLevel;
+    });
 }
 
 RCT_REMAP_METHOD(getBrightnessLevel,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-    resolve(@([UIScreen mainScreen].brightness));
+    /*
+     2019.11.01 edited by woogie.kim
+     Xcode11 iPhone11 이상 계열에서 main thread violation exception이 발생하기 때문에 queue 직렬화로 처리
+     */
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        resolve(@([UIScreen mainScreen].brightness));
+    });
 }
 
 @end
